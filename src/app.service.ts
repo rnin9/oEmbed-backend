@@ -46,7 +46,10 @@ export class AppService {
       console.log(api);
 
       return data;
-    } else if (urlSchema.hostname === 'www.flickr.com') {
+    } else if (
+      urlSchema.hostname === 'www.flickr.com' ||
+      urlSchema.hostname === 'flickr.com'
+    ) {
       const special = 'http://www.flickr.com/services/oembed/?url=';
       const query = await this.makeUrl(url);
       const api = special + query;
@@ -62,15 +65,9 @@ export class AppService {
     //map으로 변경?
     const urlSchema = new URL(url.url);
     const params = new URLSearchParams(urlSchema.search);
-    if (url.maxwidth != undefined) {
-      params.append('maxwidth', url.maxwidth.toString());
-    }
-    if (url.maxheight != undefined) {
-      params.append('maxheight', url.maxheight.toString());
-    }
-    if (url.format != undefined) {
-      params.append('format', url.format.toString());
-    }
+    Object.keys(url).map((query) => {
+      params.append(query, url[query].toString());
+    });
     console.log(urlSchema.toString() + params.toString());
     return urlSchema.toString() + '&' + params.toString();
   }
