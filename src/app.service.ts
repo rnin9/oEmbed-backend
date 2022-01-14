@@ -1,16 +1,21 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { AxiosResponse } from 'axios';
-import { map, Observable } from 'rxjs';
+import { lastValueFrom, map } from 'rxjs';
 
 @Injectable()
 export class AppService {
   constructor(private httpService: HttpService) {}
-  async getData(url: string): Promise<Observable<AxiosResponse<any, any>>> {
-    const api = 'http://flickr.com/services/oembed?url=' + url;
+  async getData(url: string): Promise<AxiosResponse> {
+    const api = 'http://www.flickr.com/services/oembed/?format=json&url=' + url;
+    // try {
     console.log(api);
-    const data = await this.httpService.get(api);
-    console.log({ datas: data });
+    const resp = await this.httpService.get(api).pipe(map((res) => res.data));
+    const data = await lastValueFrom(resp);
+    console.log({ res: resp, datas: data });
     return data;
+    // } catch (err) {
+    // console.log(err);
+    // }
   }
 }
