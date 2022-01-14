@@ -1,10 +1,13 @@
 import { Type } from 'class-transformer';
-import { IsInt, IsOptional, IsString } from 'class-validator';
+import { IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
+//get query elements from url and matching object with urlDto
 export class urlDto {
+  //user is Required
+  @IsNotEmpty()
   @IsString()
   url: string;
-
+  //others are optional
   @IsOptional()
   @IsInt()
   @Type(() => Number)
