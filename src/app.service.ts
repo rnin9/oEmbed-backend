@@ -12,7 +12,7 @@ export class AppService {
     console.log(urlSchema);
     //get hostname to make branch
     if (urlSchema.hostname === 'www.youtube.com') {
-      const special = 'https://www.youtube.com/oembed?';
+      const special = 'https://www.youtube.com/oembed?url=';
       const query = await this.makeUrl(url);
       const api = special + query;
       const resp = this.httpService.get(api).pipe(map((res) => res.data)); //observable
@@ -72,6 +72,6 @@ export class AppService {
       params.append('format', url.format.toString());
     }
     console.log(urlSchema.toString() + params.toString());
-    return urlSchema.toString() + params.toString();
+    return urlSchema.toString() + '&' + params.toString();
   }
 }
