@@ -1,14 +1,18 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, HttpException, Query } from '@nestjs/common';
 import { AppService } from './app.service';
 
-@Controller()
+@Controller('data')
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Get()
-  async getData(@Query() url: string) {
+  @Get('/')
+  async getData(@Query('url') url: string) {
     try {
-      this.appService.getData(url);
-    } catch (err) {}
+      const datas = await this.appService.getData(url);
+      console.log(url);
+      return { statusCode: 200, data: datas };
+    } catch (err) {
+      throw new HttpException(err.response, err.status);
+    }
   }
 }
