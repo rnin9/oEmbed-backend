@@ -7,13 +7,18 @@ import { urlDto } from './dto/url.dto';
 @Injectable()
 export class AppService {
   constructor(private httpService: HttpService) {}
-  //Getting oembed data Main Logic
+
+  /* @brief Main Logic which is Getting oEmbed data
+   * @date 22/01/15
+   * @return data (Promise<AxiosResponse>) : data which is derived from oEmbed api
+   * @param urlDTO : url query element (urlDTO which is defined in /src/dto/url.dto.ts)
+   */
   async getData(urlData: urlDto): Promise<AxiosResponse> {
-    const urlSchema = new URL(urlData.url);
+    const url = new URL(urlData.url);
     //make url process, use two async function parallelly with promise.all()
     const api = await Promise.all([
       //selecting api by url's hostname
-      this.selectApi(urlSchema.hostname).catch((err) => {
+      this.selectApi(url.hostname).catch((err) => {
         return err;
       }),
       //make query url with parameters made by urlDto elements
@@ -27,7 +32,12 @@ export class AppService {
     const data = await lastValueFrom(resp);
     return data;
   }
-  //Query url making Logic
+
+  /* @brief 'url with query' making Logic
+   * @date 22/01/15
+   * @return url(Promise<string>) : completed url which is made by urlDTO
+   * @param urlDTO : url query element (urlDTO which is defined in /src/dto/url.dto.ts)
+   */
   async makeQuery(url: urlDto): Promise<string> {
     const urlSchema = new URL(url.url);
     const params = new URLSearchParams(urlSchema.search);
@@ -38,9 +48,13 @@ export class AppService {
     return urlSchema.toString() + '&' + params.toString();
   }
 
-  //select api by hostname
+  /* @brief Logic which is selecting api by hostname
+   * @date 22/01/15
+   * @return specific url(Promise<string>) : get specific url which is fit with hostname
+   * @param hostname : hostname which is requested by client(consumer)
+   */
   async selectApi(hostname: string): Promise<string> {
-    //selecting api logic
+    //selecting api url logic
     if (hostname === 'www.youtube.com') {
       return 'https://www.youtube.com/oembed?url=';
     } else if (hostname === 'www.instagram.com') {
