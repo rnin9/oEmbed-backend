@@ -22,6 +22,7 @@ export class urlDto {
   @Type(() => Number)
   maxheight: number;
 
+  @IsOptional()
   @IsEnum(Form)
   format: Form;
 }
