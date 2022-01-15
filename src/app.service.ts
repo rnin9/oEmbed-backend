@@ -66,58 +66,34 @@ export class AppService {
   async selectApi(hostname: string, pathname: string): Promise<string> {
     //get consumer's urlScheme depths to check valid URL
     const depths = this.checkDepths(pathname);
-    //checking url's hostname to select appropriate api
-    if (hostname === 'www.youtube.com' || hostname === 'youtube.com') {
-      if (depths < 1) {
+    const apis = {
+      'youtube.com': 'https://www.youtube.com/oembed?url=',
+      'instagram.com': 'https://api.instagram.com/oembed/?url=',
+      'twitter.com': 'https://publish.twitter.com/oembed?url=',
+      'vimeo.com': 'https://vimeo.com/api/oembed.json?url=',
+      'flickr.com': 'http://www.flickr.com/services/oembed/?url=',
+      'Not-match': 'end',
+    };
+
+    for (const [domain, api] of Object.entries(apis)) {
+      if (domain === 'Not-match') {
         throw new HttpException(
-          'not Valid url Scheme Depths',
-          HttpStatus.NOT_FOUND,
+          'not Valid oEmbed Api URL',
+          HttpStatus.BAD_REQUEST,
         );
       }
-      return 'https://www.youtube.com/oembed?url=';
-    } else if (
-      hostname === 'www.instagram.com' ||
-      hostname === 'instagram.com'
-    ) {
-      if (depths < 2) {
-        throw new HttpException(
-          'not Valid url Scheme Depths',
-          HttpStatus.NOT_FOUND,
-        );
+      if (hostname.match(domain)) {
+        if (this.validDepths(depths, hostname.match(domain)[0])) {
+          return api;
+        } else {
+          throw new HttpException(
+            'not Valid url Scheme Depths',
+            HttpStatus.NOT_FOUND,
+          );
+        }
       }
-      return 'https://api.instagram.com/oembed/?url=';
-    } else if (hostname === 'twitter.com') {
-      if (depths < 1) {
-        throw new HttpException(
-          'not Valid url Scheme Depths',
-          HttpStatus.NOT_FOUND,
-        );
-      }
-      return 'https://publish.twitter.com/oembed?url=';
-    } else if (hostname === 'vimeo.com' || hostname === 'www.vimeo.com') {
-      if (depths < 1) {
-        throw new HttpException(
-          'not Valid url Scheme Depths',
-          HttpStatus.NOT_FOUND,
-        );
-      }
-      return 'https://vimeo.com/api/oembed.json?url=';
-    } else if (hostname === 'www.flickr.com' || hostname === 'flickr.com') {
-      if (depths < 2) {
-        throw new HttpException(
-          'not Valid url Scheme Depths',
-          HttpStatus.NOT_FOUND,
-        );
-      }
-      return 'http://www.flickr.com/services/oembed/?url=';
-    } else {
-      throw new HttpException(
-        'not Valid oEmbed Api URL',
-        HttpStatus.BAD_REQUEST,
-      );
     }
   }
-
   /* @brief Logic which is check url scheme pathname depths (checking valid scheme)
    * @date 22/01/15
    * @return number of depths (number)  : get url pathname depths
@@ -129,5 +105,17 @@ export class AppService {
     } else {
       return pathname.match(/\/.+?/g).length;
     }
+  }
+
+  validDepths(depths: number, domain: string): boolean {
+    const apiDepths = {
+      'youtube.com': 1,
+      'instagram.com': 2,
+      'twitter.com': 1,
+      'vimeo.com': 1,
+      'flickr.com': 2,
+    };
+    if (depths < apiDepths[domain]) return false;
+    else return true;
   }
 }
