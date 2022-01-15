@@ -31,7 +31,7 @@ export class AppService {
       map((res) => res.data),
       catchError((err) => {
         throw new HttpException(
-          'Not have oEmbed Data from oEmbed Api (check Query Parameters)',
+          'Error on Getting Data from oEmbed Api (check Query Parameters)',
           err.response.status,
         );
       }),
@@ -42,7 +42,7 @@ export class AppService {
   }
 
   /* @brief 'url with query' making Logic
-   * @date 22/01/15
+   * @date 22/01/14
    * @return url(Promise<string>) : completed url which is made by urlDTO
    * @param urlDTO : url query element (urlDTO which is defined in /src/dto/url.dto.ts)
    */
@@ -57,7 +57,7 @@ export class AppService {
   }
 
   /* @brief Logic which is selecting api by hostname
-   * @date 22/01/15
+   * @date 22/01/14
    * @return specific url(Promise<string>) : get specific url which is fit with hostname
    * @param hostname, pathname : hostname & hostname which is requested by client(consumer)
    * @error statusCode 404(not found) : not appropriate url scheme Depths
@@ -72,10 +72,11 @@ export class AppService {
       'twitter.com': 'https://publish.twitter.com/oembed?url=',
       'vimeo.com': 'https://vimeo.com/api/oembed.json?url=',
       'flickr.com': 'http://www.flickr.com/services/oembed/?url=',
-      'Not-match': 'end',
+      'Not-match': 'end', // to control loop when domain does not match with apis
     };
-
+    //check all elements of 'apis'object
     for (const [domain, api] of Object.entries(apis)) {
+      //if domain not matches with any elements of 'apis' object, error
       if (domain === 'Not-match') {
         throw new HttpException(
           'not Valid oEmbed Api URL',
@@ -83,6 +84,7 @@ export class AppService {
         );
       }
       if (hostname.match(domain)) {
+        //if domain matches with 'apis' key, checking depths
         if (this.validDepths(depths, hostname.match(domain)[0])) {
           return api;
         } else {
@@ -94,9 +96,10 @@ export class AppService {
       }
     }
   }
+
   /* @brief Logic which is check url scheme pathname depths (checking valid scheme)
    * @date 22/01/15
-   * @return number of depths (number)  : get url pathname depths
+   * @return number of depths (number) : get url pathname depths
    * @param pathname : pathname which is requested by client(consumer)
    */
   checkDepths(pathname: string): number {
@@ -107,6 +110,12 @@ export class AppService {
     }
   }
 
+  /* @brief Logic which is check url scheme pathname depths (checking valid scheme)
+   * @date 22/01/15
+   * @return number of depths (number)  : get url pathname depths
+   * @param depths : number of depths which is requested by client(consumer)
+            domain : domain which is requested by client(consumer's urlScheme)
+  */
   validDepths(depths: number, domain: string): boolean {
     const apiDepths = {
       'youtube.com': 1,
