@@ -14,6 +14,7 @@ export class urlDto {
   //others are optional
   @IsOptional()
   @IsInt()
+  //type transforming
   @Type(() => Number)
   maxwidth: number;
 
@@ -22,6 +23,7 @@ export class urlDto {
   @Type(() => Number)
   maxheight: number;
 
+  //format should have enum(Form) value but it is optional
   @IsOptional()
   @IsEnum(Form)
   format: Form;
