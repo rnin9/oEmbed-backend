@@ -1,5 +1,5 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { AxiosResponse } from 'axios';
 import { lastValueFrom, map } from 'rxjs';
 import { urlDto } from './dto/url.dto';
@@ -19,11 +19,11 @@ export class AppService {
     const api = await Promise.all([
       //selecting api by url's hostname
       this.selectApi(url.hostname).catch((err) => {
-        return err;
+        throw new HttpException(err.response, err.status);
       }),
       //make query url with parameters made by urlDto elements
       this.makeQuery(urlData).catch((err) => {
-        return err;
+        throw new HttpException(err.response, err.status);
       }),
     ]).then((subUrls) => subUrls.join('+'));
     //using Rxjs to get Data when api URL Ready.
@@ -55,18 +55,24 @@ export class AppService {
    */
   async selectApi(hostname: string): Promise<string> {
     //selecting api url logic
-    if (hostname === 'www.youtube.com') {
+    if (hostname === 'www.youtube.com' || hostname === 'youtube.com') {
       return 'https://www.youtube.com/oembed?url=';
-    } else if (hostname === 'www.instagram.com') {
+    } else if (
+      hostname === 'www.instagram.com' ||
+      hostname === 'instagram.com'
+    ) {
       return 'https://api.instagram.com/oembed/?url=';
-    } else if (hostname === 'twitter.com') {
+    } else if (hostname === 'twitter.com' || hostname === 'www.twitter.com') {
       return 'https://publish.twitter.com/oembed?url=';
-    } else if (hostname === 'vimeo.com') {
+    } else if (hostname === 'vimeo.com' || hostname === 'www.vimeo.com') {
       return 'https://vimeo.com/api/oembed.json?url=';
     } else if (hostname === 'www.flickr.com' || hostname === 'flickr.com') {
       return 'http://www.flickr.com/services/oembed/?url=';
     } else {
-      return undefined;
+      throw new HttpException(
+        'not Valid oEmbed Api URL',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 }
