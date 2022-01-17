@@ -14,16 +14,15 @@ import { urlDto } from './dto/url.dto';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  /* @brief Getting urlSchema's data by using oEmbed API
+  /* @brief Getting urlScheme's data by using oEmbed API
    * @date 22/01/15
    * @return oEmbed data (json) : data which is derived from oEmbed api
    * @param urlDTO : url query element (urlDTO which is defined in /src/dto/url.dto.ts)
    */
   @Get()
   async getOembedData(@Query() url: urlDto, @Res() res) {
-    // get url schema's elements by query parameters with using urlDTO (defined in /src/dto/url.dto.ts)
+    // get url scheme's elements by query parameters with using urlDTO (defined in /src/dto/url.dto.ts)
     try {
-      console.log(url);
       const datas = await this.appService.getData(url);
       return res.status(HttpStatus.OK).json(datas);
     } catch (err) {
