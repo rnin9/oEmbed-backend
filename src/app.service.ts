@@ -25,7 +25,7 @@ export class AppService {
       this.makeQuery(urlData).catch((err) => {
         throw new HttpException(err.response, err.status);
       }),
-    ]).then((subUrls) => subUrls.join('+'));
+    ]).then((subUrls) => subUrls.join(''));
     //using Rxjs to get Data when api URL Ready.
     const resp = this.httpService.get(api).pipe(
       map((res) => res.data),
@@ -51,7 +51,9 @@ export class AppService {
     const params = new URLSearchParams(urlScheme.search);
     //append all parameters which is in urlDto element to url
     Object.keys(url).map((query) => {
-      params.append(query, url[query].toString());
+      if (query !== 'url') {
+        params.append(query, url[query].toString());
+      }
     });
     return urlScheme.toString() + '&' + params.toString();
   }
