@@ -1,6 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { AxiosResponse } from 'axios';
+import fs from 'fs';
 import { catchError, lastValueFrom, map } from 'rxjs';
 import { urlDto } from './dto/url.dto';
 
@@ -38,7 +39,14 @@ export class AppService {
     );
     // subscribe and await until operation finished, and convert to promise
     const data = await lastValueFrom(resp);
-    return data;
+
+    //when this API use Instagram oEmbed, save Image to server asset
+    if (data.author_url.match('instagram')) {
+      const instaImage = await this.saveInstaImage(data.thumbnail_url);
+      return { ...data, instaImagePath: instaImage['path'] };
+    } else {
+      return data;
+    }
   }
 
   /* @brief 'url with query' making Logic
@@ -128,5 +136,30 @@ export class AppService {
     };
     if (depths < apiDepths[domain]) return false;
     else return true;
+  }
+
+  /* @brief Logic which is save image to /public/InstagramImage because of SOP(Same-origin-Policy) Error
+   * @date 22/01/19
+   * @return fileSaving Data (AxiosResponse)  : saving data Response
+   * @param src (string) : Instagram Image URL
+   */
+  async saveInstaImage(src: string): Promise<AxiosResponse> {
+    //save Image to server
+    const writer = fs.createWriteStream(
+      `./public/InstagramImage/${Date.now().toString()}-image.png`,
+    );
+    try {
+      const response = await this.httpService.axiosRef({
+        url: src,
+        method: 'GET',
+        responseType: 'stream',
+      });
+      return response.data.pipe(writer);
+    } catch (err) {
+      throw new HttpException(
+        'Error On saving Instagram Image to Server!',
+        err.response.status,
+      );
+    }
   }
 }
