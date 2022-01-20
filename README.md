@@ -27,6 +27,8 @@ $ npm run start
  <br/>
  
  >Q2: 코드 작성 시 유의했던 사항을 설명해주세요.
- >>  spec에 맞추어 서버단에서 처리해 줄 수 있는 Error에 신경을 썼습니다. 가독성의 부분이나 재사용을 쉽게하기위해 service layer메소드들을 분리하여 코드를 작성했고, 최대한 if else와 같은 분기를 적게 사용하려 노력했습니다. Front부분에서 처리할 수 없는 (Instagram Image URL SOP issue) 부분을 서버단에서 처리하여, 프론트단에서 차선책으로 client의 request에 응답할 수 있도록 했습니다. 
+ >>  * spec에 맞추어 서버단에서 처리해 줄 수 있는 Error에 신경을 썼습니다.<br/> 
+ >>  * 가독성의 부분이나 재사용을 쉽게하기위해 service layer메소드들을 분리하여 코드를 작성했고, 최대한 if else와 같은 분기를 적게 사용하려 노력했습니다.<br/>
+ >>  * Front부분에서 처리할 수 없는 (Instagram Image URL SOP issue) 부분을 서버단에서 처리하여, 프론트단에서 차선책으로 client의 request에 응답할 수 있도록 했습니다. 
 ____
 <h4 align='right'> written by kang min ju 2022/01/20</h4>
