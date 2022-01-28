@@ -1,4 +1,4 @@
-# Purple IO 백엔드 테스트 (Backend)
+백엔드 테스트 (Backend)
 
 해당 백엔드 테스트는 [Nest](https://github.com/nestjs/nest) framework, Typescript작성되어 있습니다.
 
